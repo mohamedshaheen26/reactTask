@@ -101,13 +101,13 @@ const App = () => {
       </header>
 
       <main
-        className='main px-5 pt-5'
+        className='main'
         style={{
           "--zoom-level": zoomLevel,
         }}
       >
         <div className='main-content flex flex-col justify-between'>
-          <div className='flex justify-between mt-4'>
+          <div className='flex justify-between mt-10 px-5'>
             {/* Left Control Panel */}
             <div className='flex flex-col items-start'>
               {/* Menu Button */}
@@ -141,7 +141,7 @@ const App = () => {
               />
             </div>
 
-            <div className='flex justify-center space-x-36'>
+            <div className='ms-8 flex justify-center space-x-36'>
               <CircularIndicator
                 value={5}
                 iconClass='fas fa-truck'
