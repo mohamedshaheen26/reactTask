@@ -8,7 +8,7 @@ const ButtonGroup = ({
 }) => {
   return (
     <div
-      className={`border-[5px] border-black/70 bg-[#8E918F]/30 backdrop-blur-xxs rounded-lg shadow-inner ${
+      className={`border-[5px] border-black/70 bg-[#8E918F]/30 backdrop-blur-xxs rounded-xl shadow-inner ${
         isHorizontal && "flex"
       } ${className} ${!isSingleBtn && "parent"}`}
     >
@@ -39,6 +39,7 @@ const ButtonGroup = ({
           `}
           >
             <span className='m-auto text-white'>
+              
               {icon ? <i className={`fas ${icon}`}></i> : label}
             </span>
 

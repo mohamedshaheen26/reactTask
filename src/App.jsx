@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import HUD from "./components/HUD";
 import ButtonGroup from "./components/ButtonGroup";
 import Joystick from "./components/Joystick";
+import CircularIndicator from "./components/CircularIndicator";
 
 const App = () => {
   const [mode, setMode] = useState("Manual");
@@ -9,6 +10,7 @@ const App = () => {
   const [lighting, setLighting] = useState("Laser");
   const [mapView, setMapView] = useState("Camera");
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [emergencyStop, setEmergencyStop] = useState(false);
   const [dateTime, setDateTime] = useState(new Date());
 
@@ -22,14 +24,29 @@ const App = () => {
     temperature: "42°C",
   };
 
-  const handleZoom = (type) => {
-    setZoomLevel((prev) => {
-      let newZoom = prev;
-      if (type === "in") newZoom = Math.min(prev + 0.1, 3);
-      if (type === "out") newZoom = Math.max(prev - 0.1, 0.5);
-      if (type === "reset") newZoom = 1;
-      return newZoom;
-    });
+  const handleZoom = (button) => {
+    if (button.icon === "fas fa-expand") {
+      toggleFullscreen();
+    } else if (button.icon === "fas fa-search-plus") {
+      setZoomLevel((prev) => Math.min(prev + 0.1, 2)); // Max 200% zoom
+    } else if (button.icon === "fas fa-search-minus") {
+      // Prevent zoom out if zoomLevel is already at the minimum (fitted state)
+      setZoomLevel((prev) => (prev > 1 ? Math.max(prev - 0.1, 1) : prev)); // Min 100% zoom
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    }
   };
 
   const handleMenuClick = () => {};
@@ -53,9 +70,14 @@ const App = () => {
   });
 
   return (
-    <div className='min-h-screen  text-white'>
+    <div
+      className='min-h-screen  text-white overflow-hidden'
+      style={{
+        transformOrigin: "top left",
+      }}
+    >
       {/* Top HUD */}
-      <header className='px-5 bg-[#131314] border-b-[5px] border-black position-relative h-[66px] flex items-center justify-between'>
+      <header className='px-5 bg-[#131314] border-b-[5px] border-black relative h-[66px] flex items-center justify-between z-50'>
         <div className='banner-navbar'></div>
 
         <HUD metrics={systemMetrics} />
@@ -78,7 +100,12 @@ const App = () => {
         </div>
       </header>
 
-      <main className='main px-5 pt-5'>
+      <main
+        className='main px-5 pt-5'
+        style={{
+          "--zoom-level": zoomLevel,
+        }}
+      >
         <div className='main-content flex flex-col justify-between'>
           <div className='flex justify-between mt-4'>
             {/* Left Control Panel */}
@@ -114,6 +141,24 @@ const App = () => {
               />
             </div>
 
+            <div className='flex justify-center space-x-36'>
+              <CircularIndicator
+                value={5}
+                iconClass='fas fa-truck'
+                showSideTicks={true}
+                showTwoAngle={true}
+                rightValue={true}
+              />
+              <CircularIndicator value={35} label='NE' />
+              <CircularIndicator
+                value={10}
+                iconClass='fas fa-wheelchair'
+                showSideTicks={true}
+                showTwoAngle={true}
+                leftValue={true}
+              />
+            </div>
+
             {/* right Control Panel */}
             <div className='flex flex-col items-end'>
               {/* emergency Stop Button */}
@@ -146,12 +191,19 @@ const App = () => {
               {/* Zoom Buttons */}
               <ButtonGroup
                 buttons={[
-                  { icon: "fas fa-expand" },
-                  { icon: "fas fa-search-plus" },
-                  { icon: "fas fa-search-minus" },
+                  {
+                    icon: "fas fa-expand",
+                    active: isFullscreen,
+                  },
+                  {
+                    icon: "fas fa-search-plus",
+                  },
+                  {
+                    icon: "fas fa-search-minus",
+                  },
                 ]}
                 onButtonClick={handleZoom}
-                className={`w-[70px]`}
+                className='w-[70px]'
                 isReverse={true}
                 isSingleBtn={true}
               />

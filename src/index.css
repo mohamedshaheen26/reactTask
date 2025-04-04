@@ -5,7 +5,6 @@
 .main {
   height: calc(100vh - 66px);
   position: relative;
-  isolation: isolate;
 }
 
 .main::before {
@@ -19,6 +18,8 @@
   background-repeat: no-repeat;
   background-size: cover;
   z-index: -1;
+  transform: scale(var(--zoom-level, 1));
+  transition: transform 0.3s ease;
 }
 
 .main-content {
@@ -27,9 +28,11 @@
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
+
 .parent button:first-child {
   border-radius: 0.5rem 0.5rem 0 0;
 }
+
 .parent button:last-child {
   border-radius: 0 0 0.5rem 0.5rem;
 }
